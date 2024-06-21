@@ -1,51 +1,22 @@
 import subprocess
 import os
 
-# List of libraries to install
-libraries_to_install = [
-    'jupyterlab',
-    # Add more libraries as needed, e.g., 'numpy', 'pandas', etc.
-]
+def setup_jupyter():
+    # Generate Jupyter configuration if not already generated
+    subprocess.run(['jupyter', 'notebook', '--generate-config', '--allow-root'])
 
-def install_libraries():
-    installed_libraries = subprocess.run(['pip', 'freeze'], capture_output=True, text=True).stdout.split('\n')
-    
-    for lib in libraries_to_install:
-        if any(lib in package for package in installed_libraries):
-            print(f'{lib} is already installed. Skipping...')
-        else:
-            print(f'Installing {lib}...')
-            subprocess.run(['pip', 'install', lib])
+    # Path to Jupyter configuration file
+    config_file = os.path.expanduser('~/.jupyter/jupyter_notebook_config.py')
 
-def configure_jupyter():
-    try:
-        from jupyter_core.paths import jupyter_config_dir
-    except ModuleNotFoundError:
-        print("Error: 'jupyter_core' module not found. Make sure Jupyter Lab is installed.")
-        return
-    
-    # Get Jupyter config directory
-    config_dir = jupyter_config_dir()
-    if not os.path.exists(config_dir):
-        os.makedirs(config_dir)
-    
-    # Generate default config file
-    default_config_file = os.path.join(config_dir, 'jupyter_notebook_config.py')
-    if not os.path.exists(default_config_file):
-        subprocess.run(['jupyter', 'notebook', '--generate-config', '--config', default_config_file])
-    
-    # Modify config file to allow no authentication and admin access
-    with open(default_config_file, 'a') as f:
-        f.write('\n')
-        f.write('c.NotebookApp.token = ""\n')  # Disable token authentication
-        f.write('c.NotebookApp.password = ""\n')  # Disable password authentication
-        f.write('c.NotebookApp.allow_origin = "*"\n')  # Allow connections from anywhere
-        f.write('c.NotebookApp.allow_root = True\n')  # Allow Jupyter to be run by root user
+    # Configure JupyterLab options in the configuration file
+    with open(config_file, 'a') as f:
+        f.write("c.NotebookApp.token = ''\n")
+        f.write("c.NotebookApp.allow_root = True\n")
+        f.write("c.NotebookApp.ip = '0.0.0.0'\n")
+        f.write("c.NotebookApp.port = 8888\n")
 
-def start_jupyter_lab():
-    subprocess.run(['jupyter', 'lab'])
+    # Start JupyterLab in the background
+    subprocess.Popen(['nohup', 'jupyter', 'lab', '&'])
 
 if __name__ == "__main__":
-    install_libraries()  # Install required libraries if not already installed
-    configure_jupyter()  # Configure Jupyter Lab
-    start_jupyter_lab()  # Start Jupyter Lab
+    setup_jupyter()
