@@ -2,6 +2,14 @@ import subprocess
 import os
 
 def setup_jupyter():
+    # Check if Jupyter is installed
+    try:
+        subprocess.run(['jupyter', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        print("Error: Jupyter is not installed or cannot be found.")
+        print("Install Jupyter using 'pip install jupyterlab' or 'conda install -c conda-forge jupyterlab'")
+        return
+
     # Generate Jupyter configuration if not already generated
     subprocess.run(['jupyter', 'notebook', '--generate-config', '--allow-root'])
 
