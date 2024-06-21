@@ -1,6 +1,5 @@
 import subprocess
 import os
-from jupyter_core.paths import jupyter_config_dir
 
 # List of libraries to install
 libraries_to_install = [
@@ -19,6 +18,12 @@ def install_libraries():
             subprocess.run(['pip', 'install', lib])
 
 def configure_jupyter():
+    try:
+        from jupyter_core.paths import jupyter_config_dir
+    except ModuleNotFoundError:
+        print("Error: 'jupyter_core' module not found. Make sure Jupyter Lab is installed.")
+        return
+    
     # Get Jupyter config directory
     config_dir = jupyter_config_dir()
     if not os.path.exists(config_dir):
