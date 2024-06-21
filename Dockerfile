@@ -16,7 +16,7 @@ RUN chmod +x /start.sh
 RUN echo "ALL ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Set environment variables
-ENV PORT=8888
+#ENV PORT=8888
 
 # Expose the port
 EXPOSE 8888
